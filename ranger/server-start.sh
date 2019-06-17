@@ -24,7 +24,9 @@ rangerAdmin_password=$ADMINPASSWORD
 rangerTagsync_password=$ADMINPASSWORD
 rangerUsersync_password=$ADMINPASSWORD
 keyadmin_password=$ADMINPASSWORD
-audit_store=
+audit_store=solr
+audit_solr_urls=http://localhost:6083/solr/ranger_audits
+audit_solr_collection_name=ranger_audits
 policymgr_external_url=https://$HOSTNAME:6182
 policymgr_http_enabled=false
 policymgr_https_keystore_file=/security/server.jks
@@ -73,10 +75,9 @@ fi
 
 if [ ! -f /security/server.jks ]; then
   keytool -genkey -noprompt -alias gateway-identity -keyalg RSA -dname "CN=$HOSTNAME, OU=Ranger, O=Apache, L=Toronto, S=ON, C=CA" -keystore /security/server.jks -storepass "$KEYPASSWORD"  -keypass "$KEYPASSWORD"
+  chmod 755 /security/server.jks
 fi
-chmod 755 /security/server.jks
 /usr/bin/ranger-admin start
-
+/opt/solr/ranger_audit_server/scripts/start_solr.sh
 cd ews/logs
-
-ls | grep -vi gc | xargs tail -f   
+ls | grep -vi gc | xargs tail -f
